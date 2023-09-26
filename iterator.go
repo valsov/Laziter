@@ -45,8 +45,10 @@ func (i *PersitableIterator[T]) NextValue() (T, bool) {
 }
 
 func (i *PersitableIterator[T]) Next() bool {
-	var value T
-	ok := true
+	var (
+		value T
+		ok    bool
+	)
 
 	select {
 	case value, ok = <-i.Provider.valuesChannel:
