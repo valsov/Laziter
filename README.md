@@ -14,19 +14,19 @@ func main() {
 
     // Iterate over values
     for iter.Next() {
-		value, _ := iter.GetCurrentValue()
-	}
+        value, _ := iter.GetCurrentValue()
+    }
 }
 
 func sampleValuesGenerator(vp *laziter.ValuesProvider[int], valuesCount int) {
-	defer vp.Close()
-	for i := 0; i < valuesCount; i++ {
-		if !vp.Wait() {
+    defer vp.Close()
+    for i := 0; i < valuesCount; i++ {
+        if !vp.Wait() {
             // Iterator stopped iteration, quit
-			break
-		}
-		vp.Yield(i) // Produce value
-	}
+            break
+        }
+        vp.Yield(i) // Produce value
+    }
 }
 ```
 
@@ -43,12 +43,12 @@ func sampleFunction() {
 
     // Get 3 values
     for i := 0; i < 4; i++ {
-		value, _ := iter.GetCurrentValue()
-	}
+        value, _ := iter.GetCurrentValue()
+    }
 }
 
 func sampleValuesGenerator(vp *laziter.ValuesProvider[int], valuesCount int) {
-	// [...] (same as above)
+    // [...] (same as above)
 }
 ```
 
@@ -64,8 +64,8 @@ func main() {
 
     // Iterate over values once
     for iter.Next() {
-		value, _ := iter.GetCurrentValue()
-	}
+        value, _ := iter.GetCurrentValue()
+    }
 
     // Reset the iterator position
     iter.ResetIteratorPosition()
@@ -74,11 +74,11 @@ func main() {
     
     // Iterate over values again
     for iter.Next() {
-		value, _ := iter.GetCurrentValue()
-	}
+        value, _ := iter.GetCurrentValue()
+    }
 }
 
 func sampleValuesGenerator(vp *laziter.ValuesProvider[int], valuesCount int) {
-	// [...] (same as above)
+    // [...] (same as above)
 }
 ```
