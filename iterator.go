@@ -5,18 +5,12 @@ type Iterator[T any] interface {
 	Next() bool
 	GetCurrentValue() (T, bool)
 	ResetIteratorPosition()
-	GetValuesProvider() ValuesProvider[T]
-	Close()
-}
-
-type ValuesProvider[T any] interface {
-	Wait() bool
-	Yield(value T)
+	GetValuesProvider() *ValuesProvider[T]
 	Close()
 }
 
 type PersitableIterator[T any] struct {
-	Provider      *BaseValuesProvider[T]
+	Provider      *ValuesProvider[T]
 	InternalSlice []T
 	currentIndex  int
 	currentValue  T
@@ -29,7 +23,7 @@ func New[T any](persistValues bool) Iterator[T] {
 		InternalSlice: []T{},
 		persistValues: persistValues,
 		currentIndex:  -1,
-		Provider: &BaseValuesProvider[T]{
+		Provider: &ValuesProvider[T]{
 			valuesChannel: make(chan T, 1),
 			nextChannel:   make(chan struct{}),
 		},
@@ -87,7 +81,7 @@ func (i *PersitableIterator[T]) ResetIteratorPosition() {
 	i.currentIndex = -1
 }
 
-func (i *PersitableIterator[T]) GetValuesProvider() ValuesProvider[T] {
+func (i *PersitableIterator[T]) GetValuesProvider() *ValuesProvider[T] {
 	return i.Provider
 }
 
@@ -97,22 +91,4 @@ func (i *PersitableIterator[T]) Close() {
 
 func (i *PersitableIterator[T]) store(value T) {
 	i.InternalSlice = append(i.InternalSlice, value)
-}
-
-type BaseValuesProvider[T any] struct {
-	valuesChannel chan T
-	nextChannel   chan struct{}
-}
-
-func (vp *BaseValuesProvider[T]) Wait() bool {
-	_, ok := <-vp.nextChannel
-	return ok
-}
-
-func (vp *BaseValuesProvider[T]) Yield(value T) {
-	vp.valuesChannel <- value
-}
-
-func (vp *BaseValuesProvider[T]) Close() {
-	close(vp.valuesChannel)
 }

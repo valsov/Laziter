@@ -96,7 +96,7 @@ func testNextValue(t *testing.T, iter Iterator[int], withValuesGenerator bool) {
 	}
 }
 
-func sampleValuesGenerator(vp ValuesProvider[int], valuesCount int) {
+func sampleValuesGenerator(vp *ValuesProvider[int], valuesCount int) {
 	defer vp.Close()
 	for i := 0; i < valuesCount; i++ {
 		if !vp.Wait() {
