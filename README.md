@@ -7,7 +7,7 @@ Lazy iterator experimentation. The aim of this lib is to enable lazy loading an 
 ```go
 func main() {
     iter := laziter.New[int](false) // No persistence needed here
-    defer iter.Close()
+    defer iter.Close() // Close() should always be called to prevent leaking goroutines
 
     // Start values provider goroutine
     go sampleValuesGenerator(iter.GetValuesProvider(), 5)
@@ -31,7 +31,7 @@ func sampleValuesGenerator(vp *laziter.ValuesProvider[int], valuesCount int) {
 ```
 
 ### Partial iteration
-The following example shows a partial iteration with the lazy iterator. Once `sampleFunction()` returns, `sampleValuesGenerator()` goroutine will end, skipping the last 2 values that won't be evaluated (3 & 4).
+The following example shows a partial iteration with the lazy iterator. Once `sampleFunction()` returns, `sampleValuesGenerator()` goroutine will end, skipping the last 2 values that won't be evaluated (3 & 4). You may stop the iteration early by calling `iter.Done()`, here it is called in a defer statement.
 
 ```go
 func sampleFunction() {
@@ -54,6 +54,7 @@ func sampleValuesGenerator(vp *laziter.ValuesProvider[int], valuesCount int) {
 
 ### Values persistence
 The current `Iterator` implementation allows values persistence which enables, for example, multiple `for iter.Next() { [...] }` statements.
+It is also possible to call `ResetIteratorPosition()` while iterating. This will pause values retrieval until the iterator needs more.
 
 ```go
 func main() {
